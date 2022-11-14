@@ -8,6 +8,7 @@
 #include "GraphMatrix.hpp"
 #include "Individual.hpp"
 #include "Path.hpp"
+#include "Timer.hpp"
 
 class GeneticAlgorithm
 {
@@ -32,6 +33,10 @@ private:
 
     float crossoverProbability;
     float mutationProbability;
+
+    // The maximum allowed time for the algorithm execution [ms]
+    int maxExecutionTime = 30000;
+    Timer timer;
 
 public:
     GeneticAlgorithm(GraphMatrix *graph);
@@ -112,6 +117,12 @@ public:
 
     // Checks if path is a correct Hamiltonian path
     bool pathIsValid(int *path);
+
+    /**
+     * @brief Returns true when the execution time limit has been reached,
+     * otherwise returns false
+     */
+    bool executionTimeLimit();
 };
 
 #endif

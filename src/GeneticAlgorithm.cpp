@@ -28,7 +28,6 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph)
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {
-
     for (int i = 0; i < populationCount; i++)
     {
         delete population[i];
@@ -63,6 +62,8 @@ void GeneticAlgorithm::copySection(int *fromArray, int *toArray, int index1, int
 
 Path GeneticAlgorithm::solveTSP()
 {
+    timer.start();
+
     // Crate random population
     initializePopulation();
 
@@ -70,9 +71,9 @@ Path GeneticAlgorithm::solveTSP()
     {
         createMatingPool();
         executeCrossover();
-        printCurrentPopulationWeights();
+        // printCurrentPopulationWeights();
         createNewPopulation();
-        // printBestPrd();
+        printBestPrd();
     } while (!endConditionIsMet());
 
     return getResult();
@@ -139,9 +140,16 @@ bool GeneticAlgorithm::endConditionIsMet()
         return false;
     }
 
+    if (executionTimeLimit())
+    {
+        printf("Reached the execution time limit\n");
+        return true;
+    }
+
     // Reached optimum
     if (fittestIndividual->getPathWeight() == graph->getOptimum())
     {
+        printf("Reached optimum.\n");
         return true;
     }
 
@@ -357,4 +365,10 @@ void GeneticAlgorithm::printBestPrd()
     int bestPathWeight = fittestIndividual->getPathWeight();
     float prd = getPrd(bestPathWeight);
     printf("prd: %.4f\n", prd);
+}
+
+bool GeneticAlgorithm::executionTimeLimit()
+{
+    printf("elapsed: %lu ms\n", timer.getElapsedMs());
+    return timer.getElapsedMs() > maxExecutionTime;
 }
