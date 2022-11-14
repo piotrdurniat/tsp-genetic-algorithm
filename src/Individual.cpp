@@ -9,10 +9,14 @@ Individual::Individual()
 
 Individual::Individual(int vertexCount, GraphMatrix *graph)
 {
-
     this->graph = graph;
     this->vertexCount = vertexCount;
     this->path = new int[vertexCount];
+}
+
+Individual::~Individual()
+{
+    delete[] this->path;
 }
 
 void Individual::setRandomPath()

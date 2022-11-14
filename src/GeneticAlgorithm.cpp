@@ -18,10 +18,23 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph)
 
     this->crossoverProbability = 0.8;
     this->mutationProbability = 0.05;
+
+    for (int i = 0; i < populationCount; ++i)
+    {
+        population[i] = new Individual(vertexCount, graph);
+        nextGenPopulation[i] = new Individual(vertexCount, graph);
+    }
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {
+
+    for (int i = 0; i < populationCount; i++)
+    {
+        delete population[i];
+        delete nextGenPopulation[i];
+    }
+
     delete[] population;
     delete[] nextGenPopulation;
     delete[] matingPool;
@@ -115,14 +128,12 @@ void GeneticAlgorithm::tournamentSelection()
                 : contestant2;
 
         matingPool[i / 2] = winner;
-
-        copyPath(winner->path, matingPool[i / 2]->path);
     }
 }
 
 bool GeneticAlgorithm::endConditionIsMet()
 {
-    // No indivudual generated yet
+    // No individual generated yet
     if (fittestIndividual == NULL)
     {
         return false;
@@ -141,9 +152,7 @@ void GeneticAlgorithm::initializePopulation()
 {
     for (int i = 0; i < populationCount; ++i)
     {
-        population[i] = new Individual(vertexCount, graph);
         population[i]->setRandomPath();
-        nextGenPopulation[i] = new Individual(vertexCount, graph);
     }
 }
 
@@ -261,19 +270,31 @@ void GeneticAlgorithm::inversionMutation(int *path, int index1, int index2)
     }
 
     std::copy(nextPath, nextPath + vertexCount, path);
+    delete[] nextPath;
 }
 
 bool GeneticAlgorithm::pathIsValid(int *path)
 {
     int *pathCopy = new int[vertexCount];
-    for (int i = 0; i < vertexCount; i++)
-    {
-        pathCopy[i] = path[i];
-    }
-
+    copyPath(path, pathCopy);
     std::sort(pathCopy, pathCopy + vertexCount);
     auto pos = std::adjacent_find(pathCopy, pathCopy + vertexCount);
+    delete[] pathCopy;
     return pos == pathCopy + vertexCount;
+}
+
+float GeneticAlgorithm::getPrd(int pathWeight)
+{
+    const int optimum = graph->getOptimum();
+    return (100.0 * (pathWeight - optimum)) / optimum;
+}
+
+Path GeneticAlgorithm::getResult()
+{
+    int *bestPath = fittestIndividual->path;
+    int bestPathWeight = fittestIndividual->getPathWeight();
+    float prd = getPrd(bestPathWeight);
+    return Path(bestPath, vertexCount, bestPathWeight, prd);
 }
 
 // Printing functions
@@ -325,20 +346,6 @@ void GeneticAlgorithm::printCurrentPopulationWeights()
 {
     printf("Curr population weights: ");
     printPopulationWeights(population, populationCount);
-}
-
-float GeneticAlgorithm::getPrd(int pathWeight)
-{
-    const int optimum = graph->getOptimum();
-    return (100.0 * (pathWeight - optimum)) / optimum;
-}
-
-Path GeneticAlgorithm::getResult()
-{
-    int *bestPath = fittestIndividual->path;
-    int bestPathWeight = fittestIndividual->getPathWeight();
-    float prd = getPrd(bestPathWeight);
-    return Path(bestPath, vertexCount, bestPathWeight, prd);
 }
 
 void GeneticAlgorithm::printBestPrd()

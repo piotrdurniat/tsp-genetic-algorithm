@@ -15,6 +15,7 @@ public:
     GraphMatrix *graph;
 
     Individual();
+    ~Individual();
     Individual(int vertexCount, GraphMatrix *graph);
     void setRandomPath();
     void printPath();

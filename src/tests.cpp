@@ -21,8 +21,6 @@ void Tests::fileInstanceTest(GraphMatrix *graph, int iterCount, std::string inst
         Path path = alg.solveTSP();
         const unsigned long elapsedTime = timer.getElapsedNs();
 
-        bool isCorrect = path.weight == graph->optimum;
-
         TestResult testResult(instanceName, graph->getVertexCount(), elapsedTime, path, path.prd);
 
         FileUtils::appendTestResult(outputPath, testResult);
