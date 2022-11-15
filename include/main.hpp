@@ -1,11 +1,14 @@
 #include "../lib/SimpleIni.h"
+#include "AlgorithmParams.hpp"
 
 CSimpleIniA ini;
 
 int main(void);
 
-void fileInstanceTest();
+// Tests on instances from files
+void fileInstanceTest(std::string inputDir, std::string outputDir);
 
-void randomInstanceTest();
+// Tests on random instances
+void randomInstanceTest(std::string outputDir);
 
-void timeTest();
+AlgorithmParams getAlorithmParams();

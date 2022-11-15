@@ -1,5 +1,6 @@
 #include "GraphMatrix.hpp"
 #include <string>
+#include "AlgorithmParams.hpp"
 
 #ifndef TESTS_H
 #define TESTS_H
@@ -15,9 +16,9 @@ namespace Tests
      * @param iterCountPerInstance Number of algorithm iterations for each instance
 
      */
-    void randomInstanceTest(int minSize, int maxSize, int iterCountPerInstance, int instanceCountPerSize, std::string outputPath);
+    void randomInstanceTest(int minSize, int maxSize, int iterCountPerInstance, int instanceCountPerSize, std::string outputPath, AlgorithmParams params);
     // Checks if results are correct for all of the provided instances
-    void testAlgorithm(std::vector<std::string> instances);
+    void testAlgorithm(std::vector<std::string> instances, AlgorithmParams params);
 
     /**
      * @brief Tests algorithm, saves results to file
@@ -27,7 +28,9 @@ namespace Tests
      * @param instanceName Name of the tested instance
      * @param outputPath Path of the results file for single instance test
      **/
-    void fileInstanceTest(GraphMatrix *graph, int iterCount, std::string instanceName, std::string outputPath);
+    void fileInstanceTest(GraphMatrix *graph, int iterCount, std::string instanceName, std::string outputPath, AlgorithmParams params);
+
+    AlgorithmParams getAlgorithmParams();
 
 };
 

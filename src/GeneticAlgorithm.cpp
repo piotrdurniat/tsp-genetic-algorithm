@@ -3,23 +3,17 @@
 #include <numeric>
 #include <iterator>
 
-GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph)
+GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph, AlgorithmParams params)
 {
+    this->params = params;
     this->graph = graph;
     this->vertexCount = graph->getVertexCount();
 
-    this->populationCount = 400;
-    this->population = new Individual *[populationCount];
+    this->population = new Individual *[params.populationCount];
+    this->nextGenPopulation = new Individual *[params.populationCount];
+    this->matingPool = new Individual *[params.matingPoolSize];
 
-    this->nextGenPopulation = new Individual *[populationCount];
-
-    this->matingPoolSize = populationCount / 2;
-    this->matingPool = new Individual *[matingPoolSize];
-
-    this->crossoverProbability = 0.8;
-    this->mutationProbability = 0.05;
-
-    for (int i = 0; i < populationCount; ++i)
+    for (int i = 0; i < params.populationCount; ++i)
     {
         population[i] = new Individual(vertexCount, graph);
         nextGenPopulation[i] = new Individual(vertexCount, graph);
@@ -28,7 +22,7 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph)
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {
-    for (int i = 0; i < populationCount; i++)
+    for (int i = 0; i < params.populationCount; i++)
     {
         delete population[i];
         delete nextGenPopulation[i];
@@ -69,6 +63,7 @@ Path GeneticAlgorithm::solveTSP()
 
     do
     {
+        executeMutations();
         createMatingPool();
         executeCrossover();
         // printCurrentPopulationWeights();
@@ -81,19 +76,19 @@ Path GeneticAlgorithm::solveTSP()
 
 void GeneticAlgorithm::createNewPopulation()
 {
-    const int jointPopulCount = 2 * populationCount;
+    const int jointPopulCount = 2 * params.populationCount;
 
     // Create a joint population of current population and next population
     std::vector<Individual *> jointPopul(jointPopulCount);
-    std::copy(population, population + populationCount, jointPopul.begin());
-    std::copy(nextGenPopulation, nextGenPopulation + populationCount, jointPopul.begin() + populationCount);
+    std::copy(population, population + params.populationCount, jointPopul.begin());
+    std::copy(nextGenPopulation, nextGenPopulation + params.populationCount, jointPopul.begin() + params.populationCount);
 
     // Sort joint population from best individual to worst
     std::sort(jointPopul.begin(), jointPopul.end(), [](Individual *a, Individual *b)
               { return a->getPathWeight() < b->getPathWeight(); });
 
     // Copy first half of the joint population to the current population
-    for (int i = 0; i < populationCount; i++)
+    for (int i = 0; i < params.populationCount; i++)
     {
         copyPath(jointPopul[i]->path, population[i]->path);
     }
@@ -110,12 +105,12 @@ void GeneticAlgorithm::createMatingPool()
 void GeneticAlgorithm::tournamentSelection()
 {
     // Array holding of contestants (their indices in population)
-    int contestants[populationCount];
+    int contestants[params.populationCount];
 
-    std::iota(contestants, contestants + populationCount, 0);
-    std::random_shuffle(contestants, contestants + populationCount);
+    std::iota(contestants, contestants + params.populationCount, 0);
+    std::random_shuffle(contestants, contestants + params.populationCount);
 
-    for (int i = 0; i < populationCount; i += 2)
+    for (int i = 0; i < params.populationCount; i += 2)
     {
         int index1 = contestants[i];
         int index2 = contestants[i + 1];
@@ -158,7 +153,7 @@ bool GeneticAlgorithm::endConditionIsMet()
 
 void GeneticAlgorithm::initializePopulation()
 {
-    for (int i = 0; i < populationCount; ++i)
+    for (int i = 0; i < params.populationCount; ++i)
     {
         population[i]->setRandomPath();
     }
@@ -166,7 +161,7 @@ void GeneticAlgorithm::initializePopulation()
 
 void GeneticAlgorithm::executeCrossover()
 {
-    for (int i = 0; i < populationCount / 2; ++i)
+    for (int i = 0; i < params.populationCount / 2; ++i)
     {
         Individual *parent1 = getRandomParent();
         Individual *parent2;
@@ -184,7 +179,7 @@ void GeneticAlgorithm::executeCrossover()
 
 Individual *GeneticAlgorithm::getRandomParent()
 {
-    int index = random() % matingPoolSize;
+    int index = random() % params.matingPoolSize;
     return matingPool[index];
 }
 
@@ -242,15 +237,16 @@ double GeneticAlgorithm::randomDouble()
 
 void GeneticAlgorithm::executeMutations()
 {
-    for (int i = 0; i < populationCount; ++i)
+    for (int i = 0; i < params.populationCount; ++i)
     {
         int index1 = 1 + random() % (vertexCount - 2);
         int index2 = index1 + 1 + random() % (vertexCount - index1 - 1);
 
-        int *path = nextGenPopulation[i]->path;
+        int *path = population[i]->path;
 
-        if (mutationProbability > randomDouble())
+        if (params.mutationProbability > randomDouble())
         {
+            // printf("mutation");
             inversionMutation(path, index1, index2);
         }
     }
@@ -310,13 +306,13 @@ Path GeneticAlgorithm::getResult()
 void GeneticAlgorithm::printCurrentPopulation()
 {
     printf("Curr population: ");
-    printPopulation(population, populationCount);
+    printPopulation(population, params.populationCount);
 }
 
 void GeneticAlgorithm::printNextPopulation()
 {
     printf("Next population: ");
-    printPopulation(population, populationCount);
+    printPopulation(population, params.populationCount);
 }
 
 void GeneticAlgorithm::printPopulation(Individual **population, int populationSize)
@@ -353,7 +349,7 @@ void GeneticAlgorithm::printArray(int *arr, int size)
 void GeneticAlgorithm::printCurrentPopulationWeights()
 {
     printf("Curr population weights: ");
-    printPopulationWeights(population, populationCount);
+    printPopulationWeights(population, params.populationCount);
 }
 
 void GeneticAlgorithm::printBestPrd()
@@ -370,5 +366,5 @@ void GeneticAlgorithm::printBestPrd()
 bool GeneticAlgorithm::executionTimeLimit()
 {
     printf("elapsed: %lu ms\n", timer.getElapsedMs());
-    return timer.getElapsedMs() > maxExecutionTime;
+    return timer.getElapsedMs() > params.maxExecutionTimeMs;
 }

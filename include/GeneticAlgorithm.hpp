@@ -9,37 +9,30 @@
 #include "Individual.hpp"
 #include "Path.hpp"
 #include "Timer.hpp"
+#include "AlgorithmParams.hpp"
 
 class GeneticAlgorithm
 {
 private:
+    AlgorithmParams params;
+
     GraphMatrix *graph;
     int vertexCount;
 
-    // Number of individuals in the population and nextGenPopulation
-    int populationCount;
     // Array of individuals in the population
     Individual **population;
-
     // The next generation population
     Individual **nextGenPopulation;
 
-    // Number of individuals in the mating pool
-    int matingPoolSize;
     // Array of individuals in the mating pool
     Individual **matingPool;
 
     Individual *fittestIndividual = NULL;
 
-    float crossoverProbability;
-    float mutationProbability;
-
-    // The maximum allowed time for the algorithm execution [ms]
-    int maxExecutionTime = 30000;
     Timer timer;
 
 public:
-    GeneticAlgorithm(GraphMatrix *graph);
+    GeneticAlgorithm(GraphMatrix *graph, AlgorithmParams params);
     ~GeneticAlgorithm();
 
     Path solveTSP();
