@@ -38,7 +38,7 @@ struct AlgorithmParams
         this->matingPoolSize = populationCount / 2;
     }
 
-    void printParams()
+    void print()
     {
         printf("Max execution time: %i\n", maxExecutionTimeMs);
         printf("Max iters w/out improv: %i\n", maxItersWithoutImprovment);

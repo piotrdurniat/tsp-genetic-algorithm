@@ -7,6 +7,7 @@
 #include "tests.hpp"
 #include "GraphMatrix.hpp"
 #include "printColor.hpp"
+#include "Individual.hpp"
 
 int main(void)
 {
@@ -33,7 +34,6 @@ int main(void)
     {
         randomInstanceTest(outputDir);
     }
-
     else
     {
         printf("Wrong mode value.\n");
@@ -45,8 +45,8 @@ int main(void)
 
 void fileInstanceTest(std::string inputDir, std::string outputDir)
 {
-
     const int instanceCount = atoi(ini.GetValue("file_instance_test", "number_of_instances", "1"));
+    const auto params = getAlorithmParams();
 
     for (int i = 0; i < instanceCount; i++)
     {
@@ -74,7 +74,6 @@ void fileInstanceTest(std::string inputDir, std::string outputDir)
         printf("Graph read from file:\n");
         graph->display();
 
-        const auto params = getAlorithmParams();
         Tests::fileInstanceTest(graph, iterCount, instanceName, outputFilePath, params);
 
         printf("Finished.\n");
@@ -87,6 +86,7 @@ void randomInstanceTest(std::string outputDir)
 {
     printf("Random instance test\n\n");
     const char *tag = "random_instance_test";
+    const auto params = getAlorithmParams();
 
     const int minSize = atoi(ini.GetValue(tag, "min_size", "1"));
     const int maxSize = atoi(ini.GetValue(tag, "max_size", "1"));
@@ -96,7 +96,6 @@ void randomInstanceTest(std::string outputDir)
 
     const std::string outputFilePath = outputDir + "/" + outputFile;
 
-    const auto params = getAlorithmParams();
     Tests::randomInstanceTest(minSize, maxSize, iterCountPerInstance, instanceCountPerSize, outputFilePath, params);
 }
 
@@ -110,10 +109,13 @@ AlgorithmParams getAlorithmParams()
     float mutationProbab = std::stof(ini.GetValue(tag, "mutation_probability", "0.2"));
     int populationCount = atoi(ini.GetValue(tag, "population_count", "1000"));
 
-    return AlgorithmParams(
+    auto params = AlgorithmParams(
         maxExecTimeMs,
         maxItersWoutImprov,
         crossoverProbab,
         mutationProbab,
         populationCount);
+
+    params.print();
+    return params;
 }
