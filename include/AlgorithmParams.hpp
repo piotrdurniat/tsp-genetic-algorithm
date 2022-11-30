@@ -11,6 +11,7 @@ struct AlgorithmParams
     float mutationProbability;
     // Number of individuals in the population and nextGenPopulation (Has to be even)
     int populationCount;
+    int nextGenPopulationCount;
 
     int matingPoolSize;
 
@@ -23,28 +24,41 @@ struct AlgorithmParams
         float mutationProbability,
         int populationCount)
     {
-        if (populationCount % 2 == 1)
+        if (populationCount % 4 != 0)
         {
-            printf("Population count must be even.");
+            printf("Population count must be divisible by 4.\n");
+            exit(0);
+        }
+        if (crossoverProbability < 0 || crossoverProbability > 1.0)
+        {
+            printf("Crossover probability must be between 0 and 1\n");
+            exit(0);
+        }
+        if (mutationProbability < 0 || mutationProbability > 1.0)
+        {
+            printf("Mutation probability must be between 0 and 1\n");
             exit(0);
         }
 
         this->maxExecutionTimeMs = maxExecutionTimeMs;
         this->maxItersWithoutImprovment = maxItersWithoutImprovment;
+
         this->crossoverProbability = crossoverProbability;
         this->mutationProbability = mutationProbability;
-        this->populationCount = populationCount;
 
+        this->populationCount = populationCount;
+        this->nextGenPopulationCount = int(populationCount * crossoverProbability);
         this->matingPoolSize = populationCount / 2;
     }
 
     void print()
     {
-        printf("Max execution time: %i\n", maxExecutionTimeMs);
-        printf("Max iters w/out improv: %i\n", maxItersWithoutImprovment);
+        printf("max execution time: %i\n", maxExecutionTimeMs);
+        printf("max iters w/out improv: %i\n", maxItersWithoutImprovment);
         printf("crossover probab: %.4f\n", crossoverProbability);
-        printf("Mutation probab: %.4f\n", mutationProbability);
+        printf("mutation probab: %.4f\n", mutationProbability);
         printf("population count: %i\n", populationCount);
+        printf("next gen population count %i\n", nextGenPopulationCount);
         printf("mating pool size: %i\n", matingPoolSize);
     }
 };

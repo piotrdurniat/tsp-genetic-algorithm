@@ -10,21 +10,27 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph, AlgorithmParams params)
     this->vertexCount = graph->getVertexCount();
 
     this->population = new Individual *[params.populationCount];
-    this->nextGenPopulation = new Individual *[params.populationCount];
+    this->nextGenPopulation = new Individual *[params.nextGenPopulationCount];
     this->matingPool = new Individual *[params.matingPoolSize];
 
     for (int i = 0; i < params.populationCount; ++i)
     {
         population[i] = new Individual(vertexCount, graph);
+    }
+    for (int i = 0; i < params.nextGenPopulationCount; ++i)
+    {
         nextGenPopulation[i] = new Individual(vertexCount, graph);
     }
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {
-    for (int i = 0; i < params.populationCount; i++)
+    for (int i = 0; i < params.populationCount; ++i)
     {
         delete population[i];
+    }
+    for (int i = 0; i < params.nextGenPopulationCount; ++i)
+    {
         delete nextGenPopulation[i];
     }
 
@@ -76,18 +82,18 @@ Path GeneticAlgorithm::solveTSP()
 
 void GeneticAlgorithm::createNewPopulation()
 {
-    const int jointPopulCount = 2 * params.populationCount;
+    const int jointPopulCount = params.populationCount + params.nextGenPopulationCount;
 
     // Create a joint population of current population and next population
     std::vector<Individual *> jointPopul(jointPopulCount);
     std::copy(population, population + params.populationCount, jointPopul.begin());
-    std::copy(nextGenPopulation, nextGenPopulation + params.populationCount, jointPopul.begin() + params.populationCount);
+    std::copy(nextGenPopulation, nextGenPopulation + params.nextGenPopulationCount, jointPopul.begin() + params.populationCount);
 
     // Sort joint population from best individual to worst
     std::sort(jointPopul.begin(), jointPopul.end(), [](Individual *a, Individual *b)
               { return a->getPathWeight() < b->getPathWeight(); });
 
-    // Copy first half of the joint population to the current population
+    // Copy first populationCount number of inviduals from joint population to the current population
     for (int i = 0; i < params.populationCount; i++)
     {
         copyPath(jointPopul[i]->path, population[i]->path);
@@ -161,7 +167,7 @@ void GeneticAlgorithm::initializePopulation()
 
 void GeneticAlgorithm::executeCrossover()
 {
-    for (int i = 0; i < params.populationCount / 2; ++i)
+    for (int i = 0; i < params.nextGenPopulationCount / 2; ++i)
     {
         Individual *parent1 = getRandomParent();
         Individual *parent2;
