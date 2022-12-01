@@ -3,7 +3,6 @@ import numpy as np
 
 
 def get_average(lst: list[int]):
-    print(lst)
     return sum(lst) / len(lst)
 
 

@@ -58,11 +58,11 @@ public:
     // creates a mating pool using the tournament selection algorithm
     void tournamentSelection();
 
-    Individual *getRandomParent();
-
     // Returns true if the path contains the given value in section between index1 and index2 inclusive
     bool sectionContains(int value, int *path, int index1, int index2);
 
+    // Mutates the path by inverting a section from index1 (inclusive) to index2(inclusive)
+    // index1 must be smaller than index2
     void inversionMutation(int *path, int index1, int index2);
 
     // Creates new population by picking best individuals from current and next populations
@@ -76,6 +76,9 @@ public:
     // Utils
 
     double randomDouble();
+
+    // Random int from min (inclusive) to max (inclusive)
+    int randomInt(int min, int max);
 
     /**
      * @brief Copy whole path `fromPath` into `toPath`

@@ -188,12 +188,12 @@ void GeneticAlgorithm::executeCrossover()
 {
     for (int i = 0; i < params.nextGenPopulationCount / 2; ++i)
     {
-        Individual *parent1 = getRandomParent();
-        Individual *parent2;
-        do
-        {
-            parent2 = getRandomParent();
-        } while (parent2 == parent1);
+        // Get two random, unique parents from mating pool
+        int index1 = randomInt(0, params.matingPoolSize - 2);
+        int index2 = randomInt(index1 + 1, params.matingPoolSize - 1);
+
+        Individual *parent1 = matingPool[index1];
+        Individual *parent2 = matingPool[index2];
 
         Individual *child1 = nextGenPopulation[2 * i];
         Individual *child2 = nextGenPopulation[2 * i + 1];
@@ -202,19 +202,13 @@ void GeneticAlgorithm::executeCrossover()
     }
 }
 
-Individual *GeneticAlgorithm::getRandomParent()
-{
-    int index = random() % params.matingPoolSize;
-    return matingPool[index];
-}
-
 void GeneticAlgorithm::fillMissingSection(int *parent, int *child, int index1, int index2)
 {
     int childIndex = (index2 + 1) % vertexCount;
     int parentIndex = (index2 + 1) % vertexCount;
+
     while (childIndex != index1)
     {
-
         int value = parent[parentIndex];
         if (!sectionContains(value, child, index1, index2))
         {
@@ -227,12 +221,15 @@ void GeneticAlgorithm::fillMissingSection(int *parent, int *child, int index1, i
     }
 }
 
+int GeneticAlgorithm::randomInt(int min, int max)
+{
+    return min + rand() % (max - min + 1);
+}
+
 void GeneticAlgorithm::oxCrossover(int *parent1, int *parent2, int *child1, int *child2)
 {
-    // Pick first index [0, vertexCount - 2]
-    int index1 = random() % (vertexCount - 1);
-    // Pick second index [index1 + 1, vertexCount - 1]
-    int index2 = index1 + 1 + random() % (vertexCount - index1 - 1);
+    int index1 = randomInt(0, vertexCount - 2);
+    int index2 = randomInt(index1 + 1, vertexCount - 1);
 
     // sekcja dopasowania
     copySection(parent2, child1, index1, index2);
@@ -257,21 +254,20 @@ bool GeneticAlgorithm::sectionContains(int value, int *path, int index1, int ind
 
 double GeneticAlgorithm::randomDouble()
 {
-    return ((double)rand() / (RAND_MAX));
+    return (double)rand() / RAND_MAX;
 }
 
 void GeneticAlgorithm::executeMutations()
 {
     for (int i = 0; i < params.populationCount; ++i)
     {
-        int index1 = 1 + random() % (vertexCount - 2);
-        int index2 = index1 + 1 + random() % (vertexCount - index1 - 1);
-
-        int *path = population[i]->path;
-
         if (params.mutationProbability > randomDouble())
         {
-            // printf("mutation");
+            int index1 = randomInt(0, vertexCount - 2);
+            int index2 = randomInt(index1 + 1, vertexCount - 1);
+
+            int *path = population[i]->path;
+
             inversionMutation(path, index1, index2);
         }
     }
@@ -280,11 +276,6 @@ void GeneticAlgorithm::executeMutations()
 void GeneticAlgorithm::inversionMutation(int *path, int index1, int index2)
 {
     int *nextPath = new int[vertexCount];
-
-    if (index1 > index2)
-    {
-        std::swap(index1, index2);
-    }
 
     for (int i = 0; i < vertexCount; ++i)
     {
