@@ -127,6 +127,13 @@ void GeneticAlgorithm::createMatingPool()
     tournamentSelection();
 }
 
+Individual *fitterIndividual(Individual *individual1, Individual *individual2)
+{
+    return individual1->getPathWeight() < individual2->getPathWeight()
+               ? individual1
+               : individual2;
+}
+
 void GeneticAlgorithm::tournamentSelection()
 {
     std::random_shuffle(population, population + params.populationCount);
@@ -136,10 +143,7 @@ void GeneticAlgorithm::tournamentSelection()
         Individual *contestant1 = population[i];
         Individual *contestant2 = population[i + 1];
 
-        Individual *winner =
-            contestant1->getPathWeight() < contestant2->getPathWeight()
-                ? contestant1
-                : contestant2;
+        Individual *winner = fitterIndividual(contestant1, contestant2);
 
         matingPool[i / 2] = winner;
     }
