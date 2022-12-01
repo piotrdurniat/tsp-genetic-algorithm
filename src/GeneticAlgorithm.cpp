@@ -115,6 +115,7 @@ void GeneticAlgorithm::createNewPopulation()
     for (int i = 0; i < params.populationCount; i++)
     {
         copyPath(jointPopul[i]->path, population[i]->path);
+        population[i]->pathWeight = jointPopul[i]->pathWeight;
     }
 
     fittestIndividual = jointPopul[0];
@@ -181,6 +182,7 @@ void GeneticAlgorithm::initializePopulation()
     for (int i = 0; i < params.populationCount; ++i)
     {
         population[i]->setRandomPath();
+        population[i]->updatePathWeight();
     }
 }
 
@@ -199,6 +201,8 @@ void GeneticAlgorithm::executeCrossover()
         Individual *child2 = nextGenPopulation[2 * i + 1];
 
         oxCrossover(parent1->path, parent2->path, child1->path, child2->path);
+        child1->updatePathWeight();
+        child2->updatePathWeight();
     }
 }
 
@@ -265,17 +269,17 @@ void GeneticAlgorithm::executeMutations()
         {
             int index1 = randomInt(0, vertexCount - 2);
             int index2 = randomInt(index1 + 1, vertexCount - 1);
-
-            int *path = population[i]->path;
-
-            inversionMutation(path, index1, index2);
+            Individual *individual = population[i];
+            inversionMutation(individual, index1, index2);
         }
     }
 }
 
-void GeneticAlgorithm::inversionMutation(int *path, int index1, int index2)
+void GeneticAlgorithm::inversionMutation(Individual *individual, int index1, int index2)
 {
+    int *path = individual->path;
     std::reverse(path + index1, path + index2 + 1);
+    individual->updatePathWeight();
 }
 
 bool GeneticAlgorithm::pathIsValid(int *path)

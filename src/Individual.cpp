@@ -38,7 +38,7 @@ void Individual::printPath()
     printf("%i", path[0]);
 }
 
-int Individual::getPathWeight()
+void Individual::updatePathWeight()
 {
     int sum = 0;
     for (int i = 0; i < vertexCount - 1; ++i)
@@ -48,5 +48,10 @@ int Individual::getPathWeight()
         sum += graph->getWeight(path[i], path[i + 1]);
     }
     sum += graph->getWeight(path[vertexCount - 1], path[0]);
-    return sum;
+    this->pathWeight = sum;
+}
+
+int Individual::getPathWeight()
+{
+    return pathWeight;
 }

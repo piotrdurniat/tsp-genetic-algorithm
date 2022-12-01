@@ -19,7 +19,12 @@ public:
     Individual(int vertexCount, GraphMatrix *graph);
     void setRandomPath();
     void printPath();
+
+    // Returns the path weigth
     int getPathWeight();
+
+    // Calculates and updatest the path weight
+    void updatePathWeight();
 };
 
 #endif

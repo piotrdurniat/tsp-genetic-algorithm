@@ -61,9 +61,9 @@ public:
     // Returns true if the path contains the given value in section between index1 and index2 inclusive
     bool sectionContains(int value, int *path, int index1, int index2);
 
-    // Mutates the path by inverting a section from index1 (inclusive) to index2(inclusive)
+    // Mutates the individual by inverting it's path section from index1 (inclusive) to index2(inclusive)
     // index1 must be smaller than index2
-    void inversionMutation(int *path, int index1, int index2);
+    void inversionMutation(Individual *individual, int index1, int index2);
 
     // Creates new population by picking best individuals from current and next populations
     void createNewPopulation();
