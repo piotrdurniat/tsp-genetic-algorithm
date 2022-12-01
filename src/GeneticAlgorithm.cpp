@@ -275,22 +275,7 @@ void GeneticAlgorithm::executeMutations()
 
 void GeneticAlgorithm::inversionMutation(int *path, int index1, int index2)
 {
-    int *nextPath = new int[vertexCount];
-
-    for (int i = 0; i < vertexCount; ++i)
-    {
-        if (i < index1 || i > index2)
-        {
-            nextPath[i] = path[i];
-        }
-        else
-        {
-            nextPath[i] = path[index2 - i + index1];
-        }
-    }
-
-    std::copy(nextPath, nextPath + vertexCount, path);
-    delete[] nextPath;
+    std::reverse(path + index1, path + index2 + 1);
 }
 
 bool GeneticAlgorithm::pathIsValid(int *path)
