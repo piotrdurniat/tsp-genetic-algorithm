@@ -71,8 +71,8 @@ void fileInstanceTest(std::string inputDir, std::string outputDir)
             printf("File not found.\n");
             continue;
         }
-        printf("Graph read from file:\n");
-        graph->display();
+        // printf("Graph read from file:\n");
+        // graph->display();
 
         Tests::fileInstanceTest(graph, iterCount, instanceName, outputFilePath, params);
 

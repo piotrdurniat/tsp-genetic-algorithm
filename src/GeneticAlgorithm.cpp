@@ -21,6 +21,8 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph, AlgorithmParams params)
     {
         nextGenPopulation[i] = new Individual(vertexCount, graph);
     }
+
+    setMinError();
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()
@@ -37,6 +39,22 @@ GeneticAlgorithm::~GeneticAlgorithm()
     delete[] population;
     delete[] nextGenPopulation;
     delete[] matingPool;
+}
+
+void GeneticAlgorithm::setMinError()
+{
+    if (this->vertexCount <= 70)
+    {
+        this->params.minError = 0.0;
+    }
+    else if (this->vertexCount <= 350)
+    {
+        this->params.minError = 0.5;
+    }
+    else
+    {
+        this->params.minError = 1.5;
+    }
 }
 
 void GeneticAlgorithm::checkPopulation(Individual **population, int populationCount)
@@ -147,10 +165,11 @@ bool GeneticAlgorithm::endConditionIsMet()
         return true;
     }
 
-    // Reached optimum
-    if (fittestIndividual->getPathWeight() == graph->getOptimum())
+    // Reached minimum error
+    float error = getError(fittestIndividual->getPathWeight());
+    if (error <= params.minError)
     {
-        printf("Reached optimum.\n");
+        printf("Reached minimum error: %.4f.\n", params.minError);
         return true;
     }
 
@@ -293,10 +312,15 @@ bool GeneticAlgorithm::pathIsValid(int *path)
     return pos == pathCopy + vertexCount;
 }
 
-float GeneticAlgorithm::getPrd(int pathWeight)
+float GeneticAlgorithm::getError(int pathWeight)
 {
     const int optimum = graph->getOptimum();
-    return (100.0 * (pathWeight - optimum)) / optimum;
+    return (pathWeight - optimum) / (float)optimum;
+}
+
+float GeneticAlgorithm::getPrd(int pathWeight)
+{
+    return 100.0 * getError(pathWeight);
 }
 
 Path GeneticAlgorithm::getResult()

@@ -15,9 +15,7 @@ def load_data(dir_name: str, file_name: str):
     vertexCount: int = -1
 
     with open(file_path, "r", newline="") as csvfile:
-        file_reader = csv.reader(
-            csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
-        )
+        file_reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
 
         # skip header
         next(file_reader)
@@ -25,9 +23,7 @@ def load_data(dir_name: str, file_name: str):
         for lines in file_reader:
             vertexCount = int(lines[1])
             time_list.append(int(lines[2]))
-            prd_list.append(float(lines[5]))
-
-    print(prd_list)
+            prd_list.append(float(lines[3]))
 
     return time_list, prd_list, vertexCount
 
@@ -53,14 +49,13 @@ def save_results(results, dir_name, file_name):
     file_path = dir_name + "/" + file_name
 
     with open(file_path, "w", newline="") as csvfile:
-        file_writer = csv.writer(
-            csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
-        )
+        file_writer = csv.writer(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         file_writer.writerow(
             [
                 "nazwa instancji",
                 "liczba wierzchołków",
-                "średni czas [ns], średni błąd [%]",
+                "średni czas [ns]",
+                "średni błąd [%]",
             ]
         )
         file_writer.writerows(results)
@@ -69,35 +64,35 @@ def save_results(results, dir_name, file_name):
 def main():
     dir_name = "./results"
 
-    result_files = [
-        "m6.atsp.csv",
-        "m10.atsp.csv",
-        "burma14.tsp.csv",
-        "gr24.tsp.csv",
-        "bays29.tsp.csv",
-        "ftv33.atsp.csv",
-        "ftv44.atsp.csv",
-        "att48.tsp.csv",
-        "berlin52.tsp.csv",
-        "ftv70.atsp.csv",
-        "gr96.tsp.csv",
-        "kroA100.tsp.csv",
-        "gr120.tsp.csv",
-        "pr124.tsp.csv",
-        "kroB150.tsp.csv",
-        "pr152.tsp.csv",
-        "ftv170.atsp.csv",
-        "kroB200.tsp.csv",
-        "rbg323.atsp.csv",
+    instance_names = [
+        # Error = 0.0
+        "burma14.tsp",
+        "gr17.tsp",
+        "gr21.tsp",
+        "gr24.tsp",
+        "bays29.tsp",
+        "ftv33.atsp",
+        "ftv44.atsp",
+        "ft53.atsp",
+        "ftv70.atsp",
+        # Error <= 0.5
+        "ch150.tsp",
+        "ftv170.atsp",
+        "gr202.tsp",
+        "rbg323.atsp",
+        # Error <= 1.5
+        "pcb442.tsp",
+        "rbg443.atsp",
+        "gr666.tsp",
+        "pr1002.tsp",
+        "pr2392.tsp",
     ]
 
     results = []
-    for file_name in result_files:
+    for instance_name in instance_names:
 
-        print(file_name)
-
+        file_name = f"{instance_name}.csv"
         time_list, prd_list, vertexCount = load_data(dir_name, file_name)
-        time_list = rm_outliers(time_list)
 
         average_time = get_average(time_list)
         average_prd = get_average(prd_list)
@@ -105,8 +100,10 @@ def main():
         average_time = round(average_time, 2)
         average_prd = round(average_prd, 2)
 
-        results.append([file_name, vertexCount, average_time, average_prd])
+        row = [instance_name, vertexCount, average_time, average_prd]
+        results.append(row)
 
+    print(results)
     save_results(results, "./", "results_average.csv")
 
 

@@ -12,8 +12,10 @@ struct AlgorithmParams
     // Number of individuals in the population and nextGenPopulation (Has to be even)
     int populationCount;
     int nextGenPopulationCount;
-
     int matingPoolSize;
+
+    // Algorithms stops when reaching the min error
+    float minError;
 
     AlgorithmParams(){};
 
@@ -49,6 +51,8 @@ struct AlgorithmParams
         this->populationCount = populationCount;
         this->nextGenPopulationCount = int(populationCount * crossoverProbability);
         this->matingPoolSize = populationCount / 2;
+
+        this->minError = 0.0;
     }
 
     void print()
@@ -60,6 +64,7 @@ struct AlgorithmParams
         printf("population count: %i\n", populationCount);
         printf("next gen population count %i\n", nextGenPopulationCount);
         printf("mating pool size: %i\n", matingPoolSize);
+        printf("min error: %.4f\n", minError);
     }
 };
 

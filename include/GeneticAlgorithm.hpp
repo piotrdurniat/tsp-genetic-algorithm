@@ -70,6 +70,7 @@ public:
 
     Path getResult();
 
+    float getError(int pathWeight);
     float getPrd(int pathWeight);
 
     // Utils
@@ -86,6 +87,8 @@ public:
      * starting from index index1 inclusive to index2 inclusive
      */
     void copySection(int *fromArray, int *toArray, int index1, int index2);
+
+    void setMinError();
 
     // Printing functions
 
