@@ -129,19 +129,12 @@ void GeneticAlgorithm::createMatingPool()
 
 void GeneticAlgorithm::tournamentSelection()
 {
-    // Array holding of contestants (their indices in population)
-    int contestants[params.populationCount];
-
-    std::iota(contestants, contestants + params.populationCount, 0);
-    std::random_shuffle(contestants, contestants + params.populationCount);
+    std::random_shuffle(population, population + params.populationCount);
 
     for (int i = 0; i < params.populationCount; i += 2)
     {
-        int index1 = contestants[i];
-        int index2 = contestants[i + 1];
-
-        Individual *contestant1 = population[index1];
-        Individual *contestant2 = population[index2];
+        Individual *contestant1 = population[i];
+        Individual *contestant2 = population[i + 1];
 
         Individual *winner =
             contestant1->getPathWeight() < contestant2->getPathWeight()
