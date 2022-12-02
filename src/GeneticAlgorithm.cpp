@@ -13,6 +13,11 @@ GeneticAlgorithm::GeneticAlgorithm(GraphMatrix *graph, AlgorithmParams params)
     this->nextGenPopulation = new Individual *[params.nextGenPopulationCount];
     this->matingPool = new Individual *[params.matingPoolSize];
 
+    const int jointPopulCount = params.populationCount + params.nextGenPopulationCount;
+
+    // Vector for holding a joint population of current population and next population during succession
+    this->jointPopul.resize(jointPopulCount);
+
     for (int i = 0; i < params.populationCount; ++i)
     {
         population[i] = new Individual(vertexCount, graph);
@@ -100,10 +105,6 @@ Path GeneticAlgorithm::solveTSP()
 
 void GeneticAlgorithm::createNewPopulation()
 {
-    const int jointPopulCount = params.populationCount + params.nextGenPopulationCount;
-
-    // Create a joint population of current population and next population
-    std::vector<Individual *> jointPopul(jointPopulCount);
     std::copy(population, population + params.populationCount, jointPopul.begin());
     std::copy(nextGenPopulation, nextGenPopulation + params.nextGenPopulationCount, jointPopul.begin() + params.populationCount);
 
@@ -308,6 +309,12 @@ Path GeneticAlgorithm::getResult()
     return Path(bestPath, vertexCount, bestPathWeight, prd);
 }
 
+bool GeneticAlgorithm::executionTimeLimit()
+{
+    printf("elapsed: %lu ms\n", timer.getElapsedMs());
+    return timer.getElapsedMs() > params.maxExecutionTimeMs;
+}
+
 // Printing functions
 
 void GeneticAlgorithm::printCurrentPopulation()
@@ -368,10 +375,4 @@ void GeneticAlgorithm::printBestPrd()
     int bestPathWeight = fittestIndividual->getPathWeight();
     float prd = getPrd(bestPathWeight);
     printf("prd: %.4f\n", prd);
-}
-
-bool GeneticAlgorithm::executionTimeLimit()
-{
-    printf("elapsed: %lu ms\n", timer.getElapsedMs());
-    return timer.getElapsedMs() > params.maxExecutionTimeMs;
 }

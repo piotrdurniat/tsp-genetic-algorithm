@@ -27,6 +27,8 @@ private:
     // Array of individuals in the mating pool
     Individual **matingPool;
 
+    std::vector<Individual *> jointPopul;
+
     Individual *fittestIndividual = NULL;
 
     Timer timer;
