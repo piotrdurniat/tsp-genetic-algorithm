@@ -1,4 +1,5 @@
 import csv
+
 import numpy as np
 
 
@@ -51,10 +52,10 @@ def save_results(results, dir_name, file_name):
         file_writer = csv.writer(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         file_writer.writerow(
             [
-                "nazwa instancji",
-                "liczba wierzchołków",
-                "średni czas [ns]",
-                "średni błąd [%]",
+                "instance name",
+                "number of vertices",
+                "average time [ns]",
+                "average error [%]",
             ]
         )
         file_writer.writerows(results)

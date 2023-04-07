@@ -1,4 +1,4 @@
-nazwa instancji,liczba wierzchołków,średni czas [ns],średni błąd [%]
+instance name,number of vertices,average time [ns],average error [%]
 burma14.tsp,14,10377839.0,0.0
 gr17.tsp,17,22539560.0,0.0
 gr21.tsp,21,32256362.0,0.0
